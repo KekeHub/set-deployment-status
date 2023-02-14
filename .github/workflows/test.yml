@@ -17,4 +17,4 @@ jobs:
       - uses: ./
         with:
           deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
-          ref: add-deployment
+          status: in_progress
