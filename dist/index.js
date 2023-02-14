@@ -44,19 +44,16 @@ class Agent {
         });
     }
     async run() {
-        const { ref, repo, owner, autoMerge, environment, transientEnvironment, productionEnvironment } = this.opts;
-        core.debug('creating environment');
-        const { data } = await this.#github.rest.repos.createDeployment({
+        const { repo, owner, deploymentId, environmentUrl, state: s } = this.opts;
+        core.debug('creating status');
+        const { data } = await this.#github.rest.repos.createDeploymentStatus({
             owner,
             repo,
-            environment,
-            auto_merge: autoMerge,
-            ref,
-            required_contexts: [],
-            transient_environment: transientEnvironment,
-            production_environment: productionEnvironment
+            deployment_id: deploymentId,
+            environment_url: environmentUrl,
+            state: s
         });
-        core.debug(`Created environment ${(0, util_1.inspect)(data)}`);
+        core.debug(`Created deployment status ${(0, util_1.inspect)(data)}`);
         return data;
     }
 }
@@ -106,18 +103,17 @@ async function run() {
             owner,
             repo,
             environment: core.getInput('environment'),
-            autoMerge: core.getInput('auto-merge') === 'true' ? true : false,
-            ref: core.getInput('ref', { required: true }),
-            productionEnvironment: core.getInput('production-environment') === 'true' ? true : false,
-            transientEnvironment: core.getInput('transient-environment') === 'true' ? true : false,
+            environmentUrl: core.getInput('environment-url'),
+            deploymentId: parseInt(core.getInput('deployment-id')),
+            state: core.getInput('state', { required: true }),
             token: core.getInput('token', { required: true })
         };
         const agent = new agent_1.Agent(opts);
-        const deployment = await agent.run();
-        core.setOutput('deployment-id', deployment.id);
-        core.setOutput('sha', deployment.sha);
-        core.setOutput('node-id', deployment.node_id);
-        core.setOutput('description', deployment.description);
+        const status = await agent.run();
+        core.setOutput('deployment-status-id', status.id);
+        core.setOutput('node-id', status.node_id);
+        core.setOutput('state', status.state);
+        core.setOutput('url', status.url);
     }
     catch (err) {
         core.setFailed(err.message);
