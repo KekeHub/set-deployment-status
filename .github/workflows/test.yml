@@ -1,0 +1,20 @@
+name: Test
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - id: create-deployment
+        uses: KekeHub/create-deployment@862498ba8a1352045bf3de52d6b34a62252bb575
+        with:
+          environment: pr-${{ github.event.pull_request.number }}
+          ref: ${{ github.head_ref }}
+
+      - uses: ./
+        with:
+          deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
+          ref: add-deployment

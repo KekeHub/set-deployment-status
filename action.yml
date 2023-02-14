@@ -1,0 +1,41 @@
+name: set-deployment-status
+description: Set a status for a deployment
+author: "KekeHub"
+inputs:
+  base-url:
+    required: false
+    description: "Base URL of the GitHub enterprises API"
+
+  deployment-id:
+    required: true
+    description: "ID of the deployment"
+
+  environment:
+    required: false
+    description: "Name of the environment that was deployment to"
+
+  environment-url:
+    required: false
+    description: "Sets the URL for accessing the environment"
+
+  repository:
+    required: false
+    description: "Owner and the repository name"
+    default: ${{ github.repository }}
+
+  state:
+    required: true
+    description: "The state of the status"
+
+  token:
+    required: false
+    description: "Credential to access the GitHub API"
+    default: ${{ github.token }}
+
+runs:
+  using: "node16"
+  main: "dist/index.js"
+
+branding:
+  icon: "archive"
+  color: "orange"
